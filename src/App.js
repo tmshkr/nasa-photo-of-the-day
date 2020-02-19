@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import Explanation from "./components/Explanation";
+import Img from "react-image";
+import { Spinner } from "reactstrap";
 import axios from "axios";
 import NASA_API_KEY from "./config";
 import "./App.scss";
@@ -13,6 +16,7 @@ function App() {
     const url = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${formatDate(
       selectedDate
     )}`;
+
     axios.get(url).then(({ data }) => {
       console.log(data);
       setData(data);
@@ -30,9 +34,10 @@ function App() {
         selectDate(new Date(selectedDate.valueOf() - 86400000));
         break;
       case 39:
-        let t = selectedDate.valueOf() + 86400000;
-        if (t > Date.now()) return;
-        selectDate(new Date(t));
+        const t = selectedDate.valueOf() + 86400000;
+        if (t < Date.now()) {
+          selectDate(new Date(t));
+        }
         break;
     }
   }
@@ -42,8 +47,15 @@ function App() {
   return (
     <div className="app">
       <h1>{title}</h1>
-      <img className="hd-image" src={hdurl} />
-      <p>{explanation}</p>
+      <Img
+        className="hd-image"
+        src={hdurl}
+        loader={
+          <Spinner color="primary" style={{ width: "3rem", height: "3rem" }} />
+        }
+        onLoad={() => console.log("loaded", hdurl)}
+      />
+      <Explanation explanation={explanation} />
     </div>
   );
 }
