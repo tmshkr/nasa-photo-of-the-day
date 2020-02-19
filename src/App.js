@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
+import NASA_API_KEY from "./config";
 import "./App.css";
 
 function App() {
+  useEffect(() => {
+    console.log(NASA_API_KEY);
+  });
+
   return (
     <div className="App">
       <p>
