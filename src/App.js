@@ -35,9 +35,11 @@ function App() {
         break;
       case 39:
         const t = selectedDate.valueOf() + 86400000;
-        if (t < Date.now()) {
+        if (t <= Date.now()) {
           selectDate(new Date(t));
         }
+        break;
+      default:
         break;
     }
   }
@@ -51,9 +53,11 @@ function App() {
         className="hd-image"
         src={hdurl}
         loader={
-          <Spinner color="primary" style={{ width: "3rem", height: "3rem" }} />
+          <Spinner
+            type="grow"
+            style={{ color: "#fff", width: "3rem", height: "3rem" }}
+          />
         }
-        onLoad={() => console.log("loaded", hdurl)}
       />
       <Explanation explanation={explanation} />
     </div>
