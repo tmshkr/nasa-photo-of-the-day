@@ -8,6 +8,7 @@ import "./App.scss";
 
 const classNames = require("classnames");
 let timer;
+const cache = {};
 
 function App() {
   const [data, setData] = useState({});
@@ -17,19 +18,32 @@ function App() {
 
   const formatDate = d => d.toISOString().match(/[^T]*/)[0];
 
-  useEffect(() => {
-    console.log("axios useEffect");
-    const url = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${formatDate(
-      selectedDate
-    )}`;
-
+  function fetchImageData(dateString) {
+    const baseUrl = `https://api.nasa.gov/planetary/apod`;
+    const options = `?api_key=${NASA_API_KEY}&date=${dateString}`;
     axios
-      .get(url)
+      .get(baseUrl + options)
       .then(({ data }) => {
+        cache[dateString] = data;
         setTextHidden(false);
         setData(data);
       })
-      .catch(err => console.dir(err));
+      .catch(err => {
+        console.dir(err);
+      });
+  }
+
+  useEffect(() => {
+    console.log("axios useEffect");
+    const dateString = formatDate(selectedDate);
+    console.log(cache);
+
+    if (cache[dateString]) {
+      setTextHidden(false);
+      setData(cache[dateString]);
+    } else {
+      fetchImageData(dateString);
+    }
   }, [selectedDate]);
 
   useEffect(() => {
@@ -47,6 +61,12 @@ function App() {
       }
     };
   }, [isTextHidden]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      document.querySelector(".tip").classList.add("fade-out");
+    }, 2500);
+  }, []);
 
   function handleKeyUp(e) {
     const d = new Date(selectedDate);
@@ -77,7 +97,7 @@ function App() {
   });
 
   return (
-    <div className={"app"}>
+    <div className="app">
       <Img
         className="hd-image"
         src={hdurl}
@@ -97,6 +117,7 @@ function App() {
         />
         <time>{date}</time>
       </div>
+      <div className="tip">Use ← or → keys to navigate</div>
     </div>
   );
 }
