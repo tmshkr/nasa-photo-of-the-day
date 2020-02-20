@@ -13,12 +13,13 @@ function truncate(str, num) {
   return str;
 }
 
-function Explanation({ explanation }) {
-  const [isTruncated, setTruncated] = useState(true);
-  const classes = classNames("explanation", { overlay: !isTruncated });
+function Explanation(props) {
+  const { explanation, handleText } = props;
+  const [fullText, setFullText] = handleText;
+  const classes = classNames("explanation", { overlay: fullText });
   return (
-    <div className={classes} onClick={() => setTruncated(!isTruncated)}>
-      <p>{isTruncated ? truncate(explanation, 200) : explanation}</p>
+    <div className={classes} onClick={() => setFullText(!fullText)}>
+      <p>{fullText ? explanation : truncate(explanation, 200)}</p>
     </div>
   );
 }

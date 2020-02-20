@@ -13,6 +13,7 @@ function App() {
   const [data, setData] = useState({});
   const [selectedDate, selectDate] = useState(new Date());
   const [isTextHidden, setTextHidden] = useState(false);
+  const [fullText, setFullText] = useState(false);
 
   const formatDate = d => d.toISOString().match(/[^T]*/)[0];
 
@@ -39,7 +40,7 @@ function App() {
   useEffect(() => {
     console.log("onmousemove useEffect");
     document.onmousemove = function(e) {
-      console.log(e);
+      // console.log(e);
       if (isTextHidden) {
         setTextHidden(false);
         handleTimer();
@@ -71,11 +72,12 @@ function App() {
   }
 
   const { date, explanation, hdurl, title } = data;
-  const classes = classNames("app", { "text-hidden": isTextHidden });
+  const classes = classNames("fader", {
+    "text-hidden": isTextHidden && !fullText
+  });
 
   return (
-    <div className={classes}>
-      <h1>{title}</h1>
+    <div className={"app"}>
       <Img
         className="hd-image"
         src={hdurl}
@@ -87,8 +89,14 @@ function App() {
           />
         }
       />
-      <Explanation explanation={explanation} />
-      <time>{date}</time>
+      <div className={classes}>
+        <h1>{title}</h1>
+        <Explanation
+          explanation={explanation}
+          handleText={[fullText, setFullText]}
+        />
+        <time>{date}</time>
+      </div>
     </div>
   );
 }
