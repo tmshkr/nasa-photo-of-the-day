@@ -10,33 +10,42 @@ function App() {
   const [data, setData] = useState({});
   const [selectedDate, selectDate] = useState(new Date());
 
-  const formatDate = d => d.toISOString().match(/[^T]*/);
+  const formatDate = d => d.toISOString().match(/[^T]*/)[0];
 
   useEffect(() => {
     const url = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${formatDate(
       selectedDate
     )}`;
 
-    axios.get(url).then(({ data }) => {
-      console.log(data);
-      setData(data);
-    });
+    axios
+      .get(url)
+      .then(({ data }) => {
+        console.log(data);
+        setData(data);
+      })
+      .catch(err => console.dir(err));
   }, [selectedDate]);
 
-  useEffect(() => {
-    document.onkeydown = handleKeyDown;
-    return () => (document.onkeydown = null);
-  }, [selectedDate]);
+  useEffect(
+    function() {
+      document.onkeyup = handleKeyUp;
+    },
+    [selectedDate]
+  );
 
-  function handleKeyDown(e) {
+  function handleKeyUp(e) {
+    let d;
     switch (e.which) {
       case 37:
-        selectDate(new Date(selectedDate.valueOf() - 86400000));
+        d = new Date(selectedDate);
+        d.setDate(d.getDate() - 1);
+        selectDate(d);
         break;
       case 39:
-        const t = selectedDate.valueOf() + 86400000;
-        if (t <= Date.now()) {
-          selectDate(new Date(t));
+        d = new Date(selectedDate);
+        d.setDate(d.getDate() + 1);
+        if (d <= Date.now()) {
+          selectDate(d);
         }
         break;
       default:
