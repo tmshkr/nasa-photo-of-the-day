@@ -11,7 +11,7 @@ let timer;
 const cache = {};
 
 function App() {
-  const [data, setData] = useState({});
+  const [viewing, setViewing] = useState({});
   const [selectedDate, selectDate] = useState(new Date());
   const [isTextHidden, setTextHidden] = useState(false);
   const [fullText, setFullText] = useState(false);
@@ -24,9 +24,11 @@ function App() {
     axios
       .get(baseUrl + options)
       .then(({ data }) => {
+        console.log("data received");
         cache[dateString] = data;
-        setTextHidden(false);
-        setData(data);
+        if (data.date === formatDate(selectedDate)) {
+          setViewing(data);
+        }
       })
       .catch(err => {
         console.dir(err);
@@ -34,27 +36,25 @@ function App() {
   }
 
   useEffect(() => {
-    console.log("axios useEffect");
-    const dateString = formatDate(selectedDate);
-    console.log(cache);
-
-    if (cache[dateString]) {
-      setTextHidden(false);
-      setData(cache[dateString]);
-    } else {
-      fetchImageData(dateString);
+    // fetches and caches 5 image datasets
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(selectedDate);
+      d.setDate(d.getDate() - i);
+      const dateString = formatDate(d);
+      if (!cache[dateString]) {
+        fetchImageData(dateString);
+      } else if (i === 0) {
+        setViewing(cache[dateString]);
+      }
     }
   }, [selectedDate]);
 
   useEffect(() => {
-    console.log("handleKeyUp useEffect");
     document.onkeyup = handleKeyUp;
-  }, [data]);
+  }, [viewing]);
 
   useEffect(() => {
-    console.log("onmousemove useEffect");
     document.onmousemove = function(e) {
-      // console.log(e);
       if (isTextHidden) {
         setTextHidden(false);
         handleTimer();
@@ -69,6 +69,7 @@ function App() {
   }, []);
 
   function handleKeyUp(e) {
+    setTextHidden(false);
     const d = new Date(selectedDate);
     switch (e.which) {
       case 37:
@@ -91,7 +92,7 @@ function App() {
     timer = setTimeout(() => setTextHidden(true), 3000);
   }
 
-  const { date, explanation, hdurl, title } = data;
+  const { date, explanation, hdurl, title } = viewing;
   const classes = classNames("fader", {
     "text-hidden": isTextHidden && !fullText
   });
