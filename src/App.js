@@ -4,7 +4,7 @@ import Img from "react-image";
 import ReactPlayer from "react-player";
 import { Spinner } from "reactstrap";
 import axios from "axios";
-import NASA_API_KEY from "./config";
+// import NASA_API_KEY from "./config";
 import "./App.scss";
 
 const classNames = require("classnames");
@@ -21,7 +21,8 @@ function App() {
 
   function fetchImageData(dateString) {
     const baseUrl = `https://api.nasa.gov/planetary/apod`;
-    const options = `?api_key=${NASA_API_KEY}&date=${dateString}`;
+    // const options = `?api_key=${NASA_API_KEY}&date=${dateString}`;
+    const options = `?date=${dateString}`;
     axios
       .get(baseUrl + options)
       .then(({ data }) => {
