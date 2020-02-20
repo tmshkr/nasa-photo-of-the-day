@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Explanation from "./components/Explanation";
 import Img from "react-image";
+import ReactPlayer from "react-player";
 import { Spinner } from "reactstrap";
 import axios from "axios";
 import NASA_API_KEY from "./config";
@@ -36,6 +37,7 @@ function App() {
   }
 
   useEffect(() => {
+    console.log(cache);
     // fetches and caches 5 image datasets
     for (let i = 0; i < 5; i++) {
       const d = new Date(selectedDate);
@@ -92,24 +94,35 @@ function App() {
     timer = setTimeout(() => setTextHidden(true), 3000);
   }
 
-  const { date, explanation, hdurl, title } = viewing;
+  const { date, explanation, hdurl, title, media_type, url } = viewing;
   const classes = classNames("fader", {
     "text-hidden": isTextHidden && !fullText
   });
 
   return (
     <div className="app">
-      <Img
-        className="hd-image"
-        src={hdurl}
-        onLoad={handleTimer}
-        loader={
-          <Spinner
-            type="grow"
-            style={{ color: "#fff", width: "3rem", height: "3rem" }}
-          />
-        }
-      />
+      {media_type === "image" && (
+        <Img
+          className="hd-image"
+          src={hdurl}
+          onLoad={handleTimer}
+          loader={
+            <Spinner
+              type="grow"
+              style={{ color: "#fff", width: "3rem", height: "3rem" }}
+            />
+          }
+        />
+      )}
+      {media_type === "video" && (
+        <ReactPlayer
+          id="video"
+          url={url}
+          width={window.innerWidth}
+          height={window.innerHeight}
+          playing
+        />
+      )}
       <div className={classes}>
         <h1>{title}</h1>
         <Explanation
