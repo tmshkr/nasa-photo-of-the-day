@@ -6,13 +6,18 @@ import axios from "axios";
 import NASA_API_KEY from "./config";
 import "./App.scss";
 
+const classNames = require("classnames");
+let timer;
+
 function App() {
   const [data, setData] = useState({});
   const [selectedDate, selectDate] = useState(new Date());
+  const [isTextHidden, setTextHidden] = useState(false);
 
   const formatDate = d => d.toISOString().match(/[^T]*/)[0];
 
   useEffect(() => {
+    console.log("axios useEffect");
     const url = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}&date=${formatDate(
       selectedDate
     )}`;
@@ -20,29 +25,36 @@ function App() {
     axios
       .get(url)
       .then(({ data }) => {
-        console.log(data);
+        setTextHidden(false);
         setData(data);
       })
       .catch(err => console.dir(err));
   }, [selectedDate]);
 
-  useEffect(
-    function() {
-      document.onkeyup = handleKeyUp;
-    },
-    [selectedDate]
-  );
+  useEffect(() => {
+    console.log("handleKeyUp useEffect");
+    document.onkeyup = handleKeyUp;
+  }, [data]);
+
+  useEffect(() => {
+    console.log("onmousemove useEffect");
+    document.onmousemove = function(e) {
+      console.log(e);
+      if (isTextHidden) {
+        setTextHidden(false);
+        handleTimer();
+      }
+    };
+  }, [isTextHidden]);
 
   function handleKeyUp(e) {
-    let d;
+    const d = new Date(selectedDate);
     switch (e.which) {
       case 37:
-        d = new Date(selectedDate);
         d.setDate(d.getDate() - 1);
         selectDate(d);
         break;
       case 39:
-        d = new Date(selectedDate);
         d.setDate(d.getDate() + 1);
         if (d <= Date.now()) {
           selectDate(d);
@@ -53,14 +65,21 @@ function App() {
     }
   }
 
+  function handleTimer() {
+    clearInterval(timer);
+    timer = setTimeout(() => setTextHidden(true), 3000);
+  }
+
   const { date, explanation, hdurl, title } = data;
+  const classes = classNames("app", { "text-hidden": isTextHidden });
 
   return (
-    <div className="app">
+    <div className={classes}>
       <h1>{title}</h1>
       <Img
         className="hd-image"
         src={hdurl}
+        onLoad={handleTimer}
         loader={
           <Spinner
             type="grow"
@@ -69,6 +88,7 @@ function App() {
         }
       />
       <Explanation explanation={explanation} />
+      <time>{date}</time>
     </div>
   );
 }

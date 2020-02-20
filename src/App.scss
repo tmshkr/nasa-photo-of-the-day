@@ -7,14 +7,21 @@ div.app {
   align-content: center;
   justify-items: center;
   height: 100vh;
+  color: #fff;
+  text-shadow: 1px 2px black;
+  text-align: center;
+  &.text-hidden {
+    div,
+    h1,
+    time {
+      display: none;
+    }
+  }
 
   h1 {
     position: absolute;
     top: 3rem;
     width: 100%;
-    color: #fff;
-    text-shadow: 1px 2px black;
-    text-align: center;
   }
 
   div.explanation {
@@ -26,9 +33,6 @@ div.app {
       display: block;
       max-width: 800px;
       margin: 0 auto 3rem;
-      color: #fff;
-      text-shadow: 1px 2px black;
-      text-align: center;
     }
     &.overlay {
       top: 0;
@@ -41,6 +45,12 @@ div.app {
         margin: 0 auto;
       }
     }
+  }
+  time {
+    position: absolute;
+    color: #dedede;
+    bottom: 0.5rem;
+    width: 100%;
   }
 }
 

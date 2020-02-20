@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+const classNames = require("classnames");
 
 function truncate(str, num) {
   if (str && str[num]) {
@@ -14,11 +15,9 @@ function truncate(str, num) {
 
 function Explanation({ explanation }) {
   const [isTruncated, setTruncated] = useState(true);
+  const classes = classNames("explanation", { overlay: !isTruncated });
   return (
-    <div
-      className={`explanation ${!isTruncated && "overlay"}`}
-      onClick={() => setTruncated(!isTruncated)}
-    >
+    <div className={classes} onClick={() => setTruncated(!isTruncated)}>
       <p>{isTruncated ? truncate(explanation, 200) : explanation}</p>
     </div>
   );
