@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 const classNames = require("classnames");
 
 function truncate(str, num) {
